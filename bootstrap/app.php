@@ -23,6 +23,7 @@ $app = new Laravel\Lumen\Application(
     dirname(__DIR__)
 );
 
+
 // Servicio del generador de comandos de Artisan
 $app->register(Flipbox\LumenGenerator\LumenGeneratorServiceProvider::class);
 
@@ -68,6 +69,9 @@ $app->singleton(
 
 $app->configure('app');
 
+$app->configure('auth');
+
+
 /*
 |--------------------------------------------------------------------------
 | Register Middleware
@@ -83,9 +87,9 @@ $app->configure('app');
 //     App\Http\Middleware\ExampleMiddleware::class
 // ]);
 
-// $app->routeMiddleware([
-//     'auth' => App\Http\Middleware\Authenticate::class,
-// ]);
+$app->routeMiddleware([
+   'auth' => App\Http\Middleware\Authenticate::class,
+]);
 
 /*
 |--------------------------------------------------------------------------

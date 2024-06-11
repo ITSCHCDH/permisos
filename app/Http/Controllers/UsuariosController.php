@@ -2,30 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use App\Models\Usuario;
+
+
 
 class UsuariosController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
+   
     /**
      * Store a newly created resource in storage.
      *
@@ -33,30 +19,20 @@ class UsuariosController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+    {       
+        if(Auth::User()->tipo != "administrador"){           
+            return response()->json(['error' => 'Usuario no autorizado'], 401);
+        }
+        $usuario = new Usuario();
+        $usuario->nombre = $request->nombre;
+        $usuario->no_trabajador = $request->no_trabajador;
+        $usuario->email = $request->email;     
+        $usuario->password = Hash::make($request->password);       
+        $usuario->departamento_id = $request->departamento_id;
+        $usuario->puesto_id = $request->puesto_id;
+        $usuario->horario_id = $request->horario_id;        
+        $usuario->save();      
+        return response()->json(['usuario' => $usuario], 200);        
     }
 
     /**
@@ -68,7 +44,19 @@ class UsuariosController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        //Metodo para actualizar un usuario
+        if(Auth::User()->tipo != "administrador"){           
+            return response()->json(['error' => 'Usuario no autorizado'], 401);
+        }
+        $usuario = Usuario::find($id);
+        $usuario->nombre = $request->nombre;
+        $usuario->no_trabajador = $request->no_trabajador;
+        $usuario->email = $request->email;
+        $usuario->departamento_id = $request->departamento_id;
+        $usuario->puesto_id = $request->puesto_id;
+        $usuario->horario_id = $request->horario_id;
+        $usuario->save();
+        return response()->json(['usuario' => $usuario], 200);
     }
 
     /**
@@ -79,6 +67,22 @@ class UsuariosController extends Controller
      */
     public function destroy($id)
     {
-        //
+        //Metodo para eliminar un usuario
+        if(Auth::User()->tipo != "administrador"){           
+            return response()->json(['error' => 'Usuario no autorizado'], 401);
+        }
+        $usuario = Usuario::find($id);
+        $usuario->delete();
+        return response()->json(['usuario' => $usuario], 200);
     }
+
+    //Metodo para obtener todos los usuarios
+    public function index()
+    {
+        if(Auth::User()->tipo != "administrador"){           
+            return response()->json(['error' => 'Usuario no autorizado'], 401);
+        }
+        $usuarios = Usuario::all();
+        return response()->json(['usuarios' => $usuarios], 200);
+    }   
 }
